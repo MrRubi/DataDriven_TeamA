@@ -119,13 +119,11 @@ aux_dpt <- DataSet_filtered[is.na(DataSet_filtered$dpt),]
 nrow(aux_dpt)
 unique(aux_dpt$proto)
 
-# El valor 29 de country parece un empty string, hay que filtrarlo
+# Hay numerosas entradas donde la variable country parece un empty string, hay que filtrarlo
 unique(DataSet_filtered$country)
 aux_country <- DataSet_filtered[is.na(DataSet_filtered$country),]
 nrow(aux_country)
-
-#HACER ALGO PARA ELIMINAR EL EMPTY STRING. NO FUNCIONA
-DataSet_filtered <- DataSet_filtered[!stri_isempty(DataSet_filtered$country),]
+DataSet_filtered <- DataSet_filtered[-which(DataSet_filtered$country == ""), ]
 
 
 # LLEGADOS A ESTE PUNTO, PODEMOS EMPEZAR A TRABAJAR EN NUESTRAS PREGUNTAS CON EL DATAFRAME DataSet_filtered
