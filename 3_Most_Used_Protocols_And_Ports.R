@@ -5,10 +5,19 @@
 # [1] TCP
 # [2] UDP
 # [3] ICMP
-# Vamos a ver cual es el mas usado así como los protocolos más usados.
+# Vamos a ver cual es el mas usado as? como los protocolos m?s usados.
 
 #include utils file for further use
 source("utils.R")
+
+
+#Intall needed packages (uncomment the first time of use)
+#install.packages("ggplot2")
+#install.packages("dplyr")
+
+#load needed libraries
+library(ggplot2)
+library(dplyr)
 
 ###########################################################################################################################
 ######################################### QUESTION 2 - PART 1: Most used protocol #########################################
@@ -26,6 +35,15 @@ protocol.graphic <- protocol.graphic + geom_bar(stat = "identity", width = 0.5)
 protocol.graphic <- protocol.graphic + labs(y = "Used times", x = "Protocols", title = "Most transport protocol used")
 protocol.graphic <- graphicCustomization(protocol.graphic)
 print(protocol.graphic)
+
+
+#Another interesting and useful way of watching the previous graphic is through a pie chart
+
+pct <- round(protocol.aggregate$n/sum(protocol.aggregate$n)*100)
+lbls <- paste(protocol.aggregate$proto, pct) # add percents to labels
+lbls <- paste(lbls,"%",sep="") # ad % to labels 
+pie(protocol.aggregate$n,labels = lbls,col=rainbow(length(lbls)),
+    main="Pie Chart of most used communication protocols") 
 
 
 ###########################################################################################################################
