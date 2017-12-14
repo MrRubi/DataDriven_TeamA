@@ -1,0 +1,121 @@
+---
+title: "Analysis of Honeypots activity"
+date: "14 de diciembre de 2017"
+output:
+  word_document: default
+  html_document: default
+---
+
+#Analysis of Honeypots activity
+
+EQUIPO A. Práctica módulo Data Driven Security, máster en cybersecurity management edición 2017-2018. UPC SCHOOL
+
+Para esta práctica hemos obtenido datos del tráfico de 9 Honeypots del 2013, distribuidos globalmente, entre Marzo y Septiembre. Entre los datos facilitados, encontramos información como el timestamp, el host "atacado",el origen del ataque (tanto localidad como la dirección ip), etc.
+
+Las preguntas que nos hemos planteado son las siguientes:
+
+1. Determinar cual es el Honeypot más atacado de todos los desplegados, y en base a ese resultado, ver de dónde provienen los ataques
+2. ¿ Cuáles son los protocolos y puertos más usados?
+3. ¿Existe alguna relación entre la geolocalización del honeypot y el puerto atacado?
+
+Integrantes del Equipo A:
+  
+- Ángel Rubiño Fernández [MR. T]
+- Álex Gonzalo Rodríguez [Hannibal]
+- José Raúl Jiménez Lama [Fénix]
+- Marc Pallejà Mairena [Murdok]
+
+
+##Carga de los datos y filtrado de informacion
+
+En esta primera parte pretendemos cargar el CSV, analizar los datos, limpiar, y quedarnos con un dataframe con el que poder trabajar y resolver nuestras cuestiones.
+
+
+```{r load_csv}
+Complete_Dataset <- read.csv("./marx-geo.csv",header = TRUE, check.names = TRUE)
+```
+
+Una vez cargado, podemos ver que el dataset dispone de 15 columnas y 451.664 filas (Variables y Observaciónes respectivamente)
+
+```{r dim}
+dim(Complete_Dataset)
+```
+
+Las variables en cuestion se pueden observar con el siguiente comando:
+
+
+```{r nombre_variables}
+names(Complete_Dataset)
+```
+
+- datetime: Tiempo en el que tuvo lugar el ataque en formato dd/mm/yyyy hh/mm/ss
+
+- host: Identificador del honeypot atacado
+
+- src: Segun la fuente de los datos, representa la direccion ip origen, aunque desconocemos el formato utilizado
+
+- proto: Protocolo de comunicacion usado (TCP,UDP,ICMP)
+
+- type: Tipo de mensaje ICMP
+
+- spt: Puerto origen del ataque
+
+- dpt: Puerto destino del ataque
+
+- srcstr: Similar a src, pero en formato tradicional
+
+- cc: Abreviacion del pais desde el que se realiza el ataque
+
+- country: Pais desde el que se realiza el ataque
+
+- locale: Poblacion desde la que se realiza el ataque
+
+- localeabbr: Abreviacion de la poblacion desde la que se realiza el ataque
+
+- postalcode: Codigo postal de la localidad desde donde se realiza el ataque
+
+- latitude: Coordenada latitud del origen del ataque
+
+- longitude: Coordenada longitud del origen del ataque
+
+Un primer acercamiento, podría ser observar las mil primeras entradas del dataset, para poder hacernos una idea de la información y si se han cargado bien.
+
+```{r primeras_muestras}
+DataSet_Sample <- head(Complete_Dataset, n=10000)
+summary(DataSet_Sample)
+```
+
+Despues de observar el dataset reducido, algunas de las conclusiones obtenidas son:  
+
+1. Hay un número elevado de obsevaciones donde la variable *type* tiene valor NA (en principio tienen que ser las observaciones donde el protocolo utilizado es distinto de ICMP). Del mismo modo, aunque en menor medida, encontramos el mismo comportamiento para las variables *dpt* y *spt*, suponemos que debe ser para los casos que el protocolo utilizado es distinto de TCP o UDP.
+
+
+2. Las variables *Locale*, *localeabbr*, *postal code*, *latitude* y *longitude* en determinadas entradas estan vacias. A priori suponemos que se da en las observaciones donde no se ha conseguido determinar la localidad exacta desde donde se realiza el ataque, tan solo el pais.
+
+
+Vamos a verificar nuestras sospechas. Empecemos por el campo *type*, que tiene muchas observaciones a NA. 
+
+Vamos a crear un dataset con las observaciones donde *type* sea diferente de NA y analizarlo manualmente.
+
+```{r check_na_subset}
+DataSet_na_type <- Complete_Dataset[!is.na(Complete_Dataset$type),]
+unique(DataSet_na_type$proto)
+```
+
+
+En todos los casos, el protocolo es ICMP, por lo que type debe referirse al tipo de comando ICMP enviado.
+
+Como hemos visto anteriormente, las variables *Locale*, *localeabbr*, *postal code*, *latitude* y *longitud* tienen observaciones a NA. Antes de dedicar esfuerzos a analizar dichas entradas, hemos de tener en cuenta que para resolver las preguntas de la práctica, necesitamos saber el pais, no queremos profundizar a nivel de localidad, por lo que las variables mencionadas no formaran parte del dataset final con el que vamos a trabajar, y, por lo tanto, vamos a eliminarlos de nuestro dataframe.
+
+
+Antes de crear el subset de datos con el que vamos a trabajar para resolver las preguntas, hay otras observaciones que también deberemos filtrar, concretamente hablamos de:
+
+- src: No entendemos el formato de esta variable
+- srcstr: No necesitamos saber la direccion ip origen, ya disponemos de la variable country
+- cc: De forma análoga a lo mencionado en el punto anterior, no necesitamos esta variable
+
+```{r dataframe_filtered}
+subset.columns <- c("datetime","host","proto","type","spt","dpt", "country")
+DataSet_filtered <- Complete_Dataset[subset.columns]
+summary(DataSet_filtered)
+```
