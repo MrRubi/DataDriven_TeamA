@@ -1,9 +1,10 @@
 ---
 title: "Analysis of Honeypots activity"
-date: "14 de diciembre de 2017"
 output:
-  word_document: default
   html_document: default
+  pdf_document: default
+  word_document: default
+date: "14 de diciembre de 2017"
 ---
 
 #Analysis of Honeypots activity
@@ -25,13 +26,30 @@ Integrantes del Equipo A:
 - José Raúl Jiménez Lama [Fénix]
 - Marc Pallejà Mairena [Murdok]
 
-
 ##Carga de los datos y filtrado de informacion
 
 En esta primera parte pretendemos cargar el CSV, analizar los datos, limpiar, y quedarnos con un dataframe con el que poder trabajar y resolver nuestras cuestiones.
 
+```{r prepare_working_directory, echo = FALSE}
+if (!file.exists("laboratory")) {
+  dir.create("laboratory")
+}  
+```
 
-```{r load_csv}
+```{r setoptions, echo=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_knit$set(root.dir = "./laboratory")
+```
+
+```{r download_dataset}
+  if(!file.exists("marx-geo.tar.gz")){
+  fileUrl <- "http://datadrivensecurity.info/blog/data/2014/01/marx-geo.tar.gz"
+  download.file(url = fileUrl, destfile = "marx-geo.tar.gz")
+  untar("marx-geo.tar.gz")
+  }
+```
+
+```{r load_csv, cache = TRUE}
 Complete_Dataset <- read.csv("./marx-geo.csv",header = TRUE, check.names = TRUE)
 ```
 
@@ -48,40 +66,40 @@ Las variables en cuestion se pueden observar con el siguiente comando:
 names(Complete_Dataset)
 ```
 
-- datetime: Tiempo en el que tuvo lugar el ataque en formato dd/mm/yyyy hh/mm/ss
+- **datetime:** Tiempo en el que tuvo lugar el ataque en formato dd/mm/yyyy hh/mm/ss
 
-- host: Identificador del honeypot atacado
+- **host:** Identificador del honeypot atacado
 
-- src: Segun la fuente de los datos, representa la direccion ip origen, aunque desconocemos el formato utilizado
+- **src:** Segun la fuente de los datos, representa la direccion ip origen, aunque desconocemos el formato utilizado
 
-- proto: Protocolo de comunicacion usado (TCP,UDP,ICMP)
+- **proto:** Protocolo de comunicacion usado (TCP,UDP,ICMP)
 
-- type: Tipo de mensaje ICMP
+- **type:** Tipo de mensaje ICMP
 
-- spt: Puerto origen del ataque
+- **spt:** Puerto origen del ataque
 
-- dpt: Puerto destino del ataque
+- **dpt:** Puerto destino del ataque
 
-- srcstr: Similar a src, pero en formato tradicional
+- **srcstr:** Similar a src, pero en formato tradicional
 
-- cc: Abreviacion del pais desde el que se realiza el ataque
+- **cc:** Abreviacion del pais desde el que se realiza el ataque
 
-- country: Pais desde el que se realiza el ataque
+- **country:** Pais desde el que se realiza el ataque
 
-- locale: Poblacion desde la que se realiza el ataque
+- **locale:** Poblacion desde la que se realiza el ataque
 
-- localeabbr: Abreviacion de la poblacion desde la que se realiza el ataque
+- **localeabbr:** Abreviacion de la poblacion desde la que se realiza el ataque
 
-- postalcode: Codigo postal de la localidad desde donde se realiza el ataque
+- **postalcode:** Codigo postal de la localidad desde donde se realiza el ataque
 
-- latitude: Coordenada latitud del origen del ataque
+- **latitude:** Coordenada latitud del origen del ataque
 
-- longitude: Coordenada longitud del origen del ataque
+- **longitude:** Coordenada longitud del origen del ataque
 
 Un primer acercamiento, podría ser observar las mil primeras entradas del dataset, para poder hacernos una idea de la información y si se han cargado bien.
 
 ```{r primeras_muestras}
-DataSet_Sample <- head(Complete_Dataset, n=10000)
+DataSet_Sample <- head(Complete_Dataset, n = 10000)
 summary(DataSet_Sample)
 ```
 
@@ -119,3 +137,63 @@ subset.columns <- c("datetime","host","proto","type","spt","dpt", "country")
 DataSet_filtered <- Complete_Dataset[subset.columns]
 summary(DataSet_filtered)
 ```
+
+Una vez ya tenemos la información que queremos, hemos de verificar que no hay ningún dato erroneo entre las observaciones de nuestra poblacion. Para ello, miraremos con unique cuales son los posibles valores que tiene cada variable y comprobaremos si alguno de ellos es NA. Para  aquellos casos en los que haya muchos valores distintos crearemos un dataframe donde guardaremos las observaciones cuyo valor de variable sea NA y comprobaremos el tamaño de dicho dataframe.
+
+```{r check_datetime_na, results='hide', echo= TRUE}
+unique(DataSet_filtered$datetime)
+aux_datetime <- DataSet_filtered[is.na(DataSet_filtered$datetime),]
+total_na <- nrow(aux_datetime)
+```
+
+- variable **datetime**: `r total_na` NA
+
+```{r check_host_na, results='hide', echo= TRUE}
+unique(DataSet_filtered$host)
+aux_host <- DataSet_filtered[is.na(DataSet_filtered$host),]
+total_na <- nrow(aux_host)
+```
+
+- variable **host**: `r total_na` NA
+
+```{r check_proto_na, results='hide', echo= TRUE}
+unique(DataSet_filtered$proto)
+aux_proto <- DataSet_filtered[is.na(DataSet_filtered$proto),]
+total_na <- nrow(aux_proto)
+```
+- variable **proto**: `r total_na` NA
+
+```{r check_type_na, results='hide', echo= TRUE}
+unique(DataSet_filtered$type)
+aux_type <- DataSet_filtered[is.na(DataSet_filtered$type),]
+total_na <- nrow(aux_type)
+not_icmp_protocols <- unique(aux_type$proto)
+```
+- variable **type**: `r total_na` que todos estan relacionados con aquellos protocolos que no son **ICMP** ya que no tienen valor para esta variable: `r not_icmp_protocols`
+
+```{r check_spt_na, results='hide', echo= TRUE}
+unique(DataSet_filtered$spt)
+aux_spt <- DataSet_filtered[is.na(DataSet_filtered$spt),]
+total_na <- nrow(aux_spt)
+all_protocols_affected <- unique(aux_spt$proto)
+```
+
+- variable **spt**: `r total_na` NA que en este caso afectan al/los protocolos: `r all_protocols_affected`
+
+```{r check_dpt_na, results='hide', echo= TRUE}
+unique(DataSet_filtered$dpt)
+aux_dpt <- DataSet_filtered[is.na(DataSet_filtered$dpt),]
+total_na <- nrow(aux_dpt)
+all_protocols_affected <- unique(aux_dpt$proto)
+```
+
+- variable **dpt**: `r total_na` NA que en este caso afectan al/los los protocolos: `r all_protocols_affected`
+
+```{r check__na, results='hide', echo= TRUE}
+unique(DataSet_filtered$country)
+aux_country <- DataSet_filtered[is.na(DataSet_filtered$country),]
+total_na <- nrow(aux_country)
+DataSet_filtered <- DataSet_filtered[-which(DataSet_filtered$country == ""), ]
+```
+
+- variable **country**: `r total_na` NA
