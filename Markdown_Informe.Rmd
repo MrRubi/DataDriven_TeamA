@@ -197,3 +197,73 @@ DataSet_filtered <- DataSet_filtered[-which(DataSet_filtered$country == ""), ]
 ```
 
 - variable **country**: `r total_na` NA
+
+Llegados a este punto, en el dataframe *DataSet_filtered* disponemos de toda la información necesaria y filtrada para poder empezar a responder a nuestras preguntas.
+
+#Honeypot mas atacado
+
+El dataset encontrado dispone de datos sobre 9 honeypots distintos.
+
+- groucho-oregon
+- groucho-us-east
+- groucho-singapore
+- groucho-tokyo
+- groucho-sa
+- zeppo-norcal     
+- groucho-norcal
+- groucho-eu
+- groucho-sydney  
+
+
+En un primer paso de analisis, vamos a comprobar el trafico de cada honeypot e intentar determinar cual ha sido el mas atacado.
+
+```{r includes_1,results='hide',echo= FALSE}
+#source("utils.R")
+library(ggplot2)
+library(dplyr)
+```
+
+```{r mostattacked,echo= TRUE}
+
+DataSet_filtered$attacks <- c(1)  # they all occur once right now
+hosts <- aggregate(attacks ~ host, data = DataSet_filtered, FUN = sum)
+
+#reorder funtion is used to print attacks in ascending order
+attacksByHoneypot.graphic <- ggplot(hosts, aes(x = reorder(host, attacks), y=attacks, fill = host))
+attacksByHoneypot.graphic <- attacksByHoneypot.graphic + geom_bar(stat = "identity", width = 0.5)
+attacksByHoneypot.graphic <- attacksByHoneypot.graphic + labs(y = "Attacks", x = "Honeypots", title = "Received attacks by honeypot")
+#attacksByHoneypot.graphic <- graphicCustomization(attacksByHoneypot.graphic)
+print(attacksByHoneypot.graphic)
+```
+
+
+Los honeypots con mas ataques son en orden ascendente Singapur, Oregon y Tokyo.  
+Estos resultados entran dentro de lo esperado, tanto Tokyo como Singapur se encuentran en el contiente asiatico, al igual que china, pais con una gran reputación en cuanto a la realizacion de ciberataques. Por ultimo, Oregon forma parte de Estados Unidos, uno de los paises mas atacado a nivel informatico del mundo.
+
+Sabiendo los paises mas atacados, vamos a ver los tres paises que mas atacan a cada honeypot.
+
+```{r mostattacked_top3,echo= TRUE}
+#group by host and country to know which country has performed more attacks adding the attacks entries and getting the top 3
+mostAttackedHostsByCountry <- DataSet_filtered %>% group_by(host, country) %>% summarise(attacks = sum(attacks)) %>% top_n(3, attacks)
+
+#print graphic to see the results
+dodge <- position_dodge(width = 0.9)
+attacksLocation.graphic <- ggplot(mostAttackedHostsByCountry, aes(x = host, y = attacks, fill = country)) 
+attacksLocation.graphic <- attacksLocation.graphic + geom_bar(stat = "identity", position = position_dodge())
+attacksLocation.graphic <- attacksLocation.graphic + labs(y = "Attacks", x = "Honeypots", title = "Top 3 attacks location")
+
+bDelete_x_AxisNames = FALSE
+#attacksLocation.graphic <- graphicCustomization(attacksLocation.graphic, FALSE)
+print(attacksLocation.graphic)
+```
+
+
+Los dos primeros paises atacantes para cada honeypot son comunes, China y Estados Unidos.Como ya hemos comentado anteriormente, entra dentro de lo esperado, a parte de ser dos paises con un nivel de poblacion elevado, tambien tiene una gran reputacion en cuanto a su actividad cibercriminal.
+
+Para acabar de hacernos una idea de mapa de ataques, vamos a observar el origen de los ataques en un mapa
+
+...
+
+
+
+
