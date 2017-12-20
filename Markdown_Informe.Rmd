@@ -1,5 +1,5 @@
 ---
-title: "Analysis of Honeypots activity"
+title: "Análisis de la actividad en Honeypots"
 output:
   html_document: default
   pdf_document: default
@@ -7,24 +7,43 @@ output:
 date: "14 de diciembre de 2017"
 ---
 
-#Analisis de la actividad de distintos honeypots
+#Análisis de la actividad de distintos honeypots
 
-EQUIPO A. Práctica módulo Data Driven Security, máster en cybersecurity management edición 2017-2018. UPC SCHOOL
+EQUIPO A. Práctica del módulo Data Driven Security, Máster en Gestión de Ciberseguridad (Cybersecurity Management) edición 2017-2018. Universidad Politécnica de Cataluña - Facultad de Informática de Barcelona.
 
-Para esta práctica hemos obtenido datos del tráfico de 9 Honeypots del 2013, distribuidos globalmente, entre Marzo y Septiembre. Entre los datos facilitados, encontramos información como el timestamp, el host "atacado",el origen del ataque (tanto localidad como la dirección ip), etc.
+Para esta práctica hemos obtenido datos del tráfico de 9 Honeypots del 2013, distribuidos globalmente, entre Marzo y Septiembre. Entre los datos facilitados, encontramos información como el timestamp, el host "atacado", el origen del ataque (tanto localidad como la dirección IPv4), etc.
 
 Las preguntas que nos hemos planteado son las siguientes:
 
 1. Determinar cual es el Honeypot más atacado de todos los desplegados, y en base a ese resultado, ver de dónde provienen los ataques
-2. ¿ Cuáles son los protocolos y puertos más usados?
+2. ¿Cuáles son los protocolos y puertos más usados?
 3. ¿Existe alguna relación entre la geolocalización del honeypot y el puerto atacado?
 
 Integrantes del Equipo A:
   
-- Ángel Rubiño Fernández [MR. T]
+- Ángel Rubiño Fernández [Mr. T]
 - Álex Gonzalo Rodríguez [Hannibal]
 - José Raúl Jiménez Lama [Fénix]
 - Marc Pallejà Mairena [Murdok]
+
+Aquí podrás encontrar el [GitHub][1] del Equipo A 
+
+[1]: https://github.com/MrRubi/DataDriven_TeamA 
+
+Aquí podrás encontrar el GitHub personal de cada integrante del Equipo A: 
+- [Ángel Rubiño Fernández - Mr. T][2] 
+- [Álex Gonzalo Rodríguez - Hannibal][3] 
+- [José Raúl Jiménez Lama - Fénix][4] 
+- [Marc Pallejà Mairena - Murdok (Cuenta 1)][5] 
+- [Marc Pallejà Mairena - Murdok (Cuenta 2)][6]
+
+[2]: https://github.com/MrRubi
+[3]: https://github.com/alexgonzalo 
+[4]: https://github.com/jrjlama 
+[5]: https://github.com/marcpalleja
+[6]: https://github.com/marcpallejamairena 
+
+En el caso de Marc, agregamos la Cuenta 2 al repositorio compartido del Equipo A pero se le subían los commits y quedaba registrado desde la Cuenta 1, por eso hemos puesto las dos.
 
 ##Carga de los datos y filtrado de informacion
 
@@ -59,7 +78,7 @@ Una vez cargado, podemos ver que el dataset dispone de 15 columnas y 451.664 fil
 dim(Complete_Dataset)
 ```
 
-Las variables en cuestion se pueden observar con el siguiente comando:
+Las variables en cuestión se pueden observar con el siguiente comando:
 
 
 ```{r nombre_variables}
@@ -72,7 +91,7 @@ names(Complete_Dataset)
 
 - **src:** Segun la fuente de los datos, representa la direccion ip origen, aunque desconocemos el formato utilizado
 
-- **proto:** Protocolo de comunicacion usado (TCP,UDP,ICMP)
+- **proto:** Protocolo de transporte usado (TCP,UDP,ICMP)
 
 - **type:** Tipo de mensaje ICMP
 
@@ -82,11 +101,11 @@ names(Complete_Dataset)
 
 - **srcstr:** Similar a src, pero en formato tradicional
 
-- **cc:** Abreviacion del pais desde el que se realiza el ataque
+- **cc:** Abreviación del país desde el que se realiza el ataque
 
-- **country:** Pais desde el que se realiza el ataque
+- **country:** País desde el que se realiza el ataque
 
-- **locale:** Poblacion desde la que se realiza el ataque
+- **locale:** Población desde la que se realiza el ataque
 
 - **localeabbr:** Abreviacion de la poblacion desde la que se realiza el ataque
 
@@ -108,7 +127,7 @@ Despues de observar el dataset reducido, algunas de las conclusiones obtenidas s
 1. Hay un número elevado de obsevaciones donde la variable *type* tiene valor NA (en principio tienen que ser las observaciones donde el protocolo utilizado es distinto de ICMP). Del mismo modo, aunque en menor medida, encontramos el mismo comportamiento para las variables *dpt* y *spt*, suponemos que debe ser para los casos que el protocolo utilizado es distinto de TCP o UDP.
 
 
-2. Las variables *Locale*, *localeabbr*, *postal code*, *latitude* y *longitude* en determinadas entradas estan vacias. A priori suponemos que se da en las observaciones donde no se ha conseguido determinar la localidad exacta desde donde se realiza el ataque, tan solo el pais.
+2. Las variables *Locale*, *localeabbr*, *postal code*, *latitude* y *longitude* en determinadas entradas estan vacías. A priori, suponemos que se da en las observaciones donde no se ha conseguido determinar la localidad exacta desde donde se realiza el ataque, tan solo el país.
 
 
 Vamos a verificar nuestras sospechas. Empecemos por el campo *type*, que tiene muchas observaciones a NA. 
@@ -123,13 +142,13 @@ unique(DataSet_na_type$proto)
 
 En todos los casos, el protocolo es ICMP, por lo que type debe referirse al tipo de comando ICMP enviado.
 
-Como hemos visto anteriormente, las variables *Locale*, *localeabbr*, *postal code*, *latitude* y *longitud* tienen observaciones a NA. Antes de dedicar esfuerzos a analizar dichas entradas, hemos de tener en cuenta que para resolver las preguntas de la práctica, necesitamos saber el pais, no queremos profundizar a nivel de localidad, por lo que las variables mencionadas no formaran parte del dataset final con el que vamos a trabajar, y, por lo tanto, vamos a eliminarlos de nuestro dataframe.
+Como hemos visto anteriormente, las variables *Locale*, *localeabbr*, *postal code*, *latitude* y *longitud* tienen observaciones a NA. Antes de dedicar esfuerzos a analizar dichas entradas, hemos de tener en cuenta que para resolver las preguntas de la práctica, necesitamos saber el país, no queremos profundizar a nivel de localidad, por lo que las variables mencionadas no formaran parte del dataset final con el que vamos a trabajar, y, por lo tanto, vamos a eliminarlos de nuestro dataframe. Solo utilizaremos las variables *latitude* y *longitud* para sus respectivas representaciones en el mapa más adelante.
 
 
 Antes de crear el subset de datos con el que vamos a trabajar para resolver las preguntas, hay otras observaciones que también deberemos filtrar, concretamente hablamos de:
 
 - src: No entendemos el formato de esta variable
-- srcstr: No necesitamos saber la direccion ip origen, ya disponemos de la variable country
+- srcstr: No necesitamos saber la direccion IP origen, ya disponemos de la variable country
 - cc: De forma análoga a lo mencionado en el punto anterior, no necesitamos esta variable
 
 ```{r dataframe_filtered}
@@ -138,7 +157,7 @@ DataSet_filtered <- Complete_Dataset[subset.columns]
 summary(DataSet_filtered)
 ```
 
-Una vez ya tenemos la información que queremos, hemos de verificar que no hay ningún dato erroneo entre las observaciones de nuestra poblacion. Para ello, miraremos con unique cuales son los posibles valores que tiene cada variable y comprobaremos si alguno de ellos es NA. Para  aquellos casos en los que haya muchos valores distintos crearemos un dataframe donde guardaremos las observaciones cuyo valor de variable sea NA y comprobaremos el tamaño de dicho dataframe.
+Una vez ya tenemos la información que queremos, tenemos que verificar que no hay ningún dato erróneo entre las observaciones de nuestra población. Para ello, miraremos con unique cuales son los posibles valores que tiene cada variable y comprobaremos si alguno de ellos es NA. Para aquellos casos en los que haya muchos valores distintos crearemos un dataframe donde guardaremos las observaciones cuyo valor de variable sea NA y comprobaremos el tamaño de dicho dataframe.
 
 ```{r check_datetime_na, results='hide', echo= TRUE}
 unique(DataSet_filtered$datetime)
@@ -200,7 +219,7 @@ DataSet_filtered <- DataSet_filtered[-which(DataSet_filtered$country == ""), ]
 
 Llegados a este punto, en el dataframe *DataSet_filtered* disponemos de toda la información necesaria y filtrada para poder empezar a responder a nuestras preguntas.
 
-#Primera pregunta: Honeypot mas atacado
+#Primera pregunta: Honeypot más atacado
 
 El dataset encontrado dispone de datos sobre 9 honeypots distintos.
 
@@ -215,7 +234,7 @@ El dataset encontrado dispone de datos sobre 9 honeypots distintos.
 - groucho-sydney  
 
 
-En un primer paso de analisis, vamos a comprobar el trafico de cada honeypot e intentar determinar cual ha sido el mas atacado.
+En un primer paso de análisis, vamos a comprobar el tráfico de cada honeypot e intentar determinar cual ha sido el más atacado:
 
 ```{r includes_1,results='hide',echo= FALSE}
 source("../utils.R")
@@ -237,10 +256,10 @@ print(attacksByHoneypot.graphic)
 ```
 
 
-Los honeypots con mas ataques son en orden ascendente Singapur, Oregon y Tokyo.  
-Estos resultados entran dentro de lo esperado, tanto Tokyo como Singapur se encuentran en el contiente asiatico, al igual que china, pais con una gran reputación en cuanto a la realizacion de ciberataques. Por ultimo, Oregon forma parte de Estados Unidos, uno de los paises mas atacado a nivel informatico del mundo.
+Los honeypots con más ataques son en orden ascendente Singapur, Oregon y Tokyo.  
+Estos resultados entran dentro de lo esperado, tanto Tokyo como Singapur se encuentran en el contiente asiático, al igual que China, país con una gran reputación en cuanto a la realización de ciberataques. Por último, Oregon forma parte de Estados Unidos, uno de los países más atacados a nivel informático del mundo.
 
-Sabiendo los paises mas atacados, vamos a ver los tres paises que mas atacan a cada honeypot.
+Sabiendo los países más atacados, vamos a ver los tres países que más atacan a cada honeypot.
 
 ```{r mostattacked_top3,echo= TRUE}
 #group by host and country to know which country has performed more attacks adding the attacks entries and getting the top 3
@@ -258,9 +277,9 @@ print(attacksLocation.graphic)
 ```
 
 
-Los dos primeros paises atacantes para cada honeypot son comunes, China y Estados Unidos.Como ya hemos comentado anteriormente, entra dentro de lo esperado, a parte de ser dos paises con un nivel de poblacion elevado, tambien tiene una gran reputacion en cuanto a su actividad cibercriminal.
+Los dos primeros países atacantes para cada honeypot son comunes, China y Estados Unidos de América. Como ya hemos comentado anteriormente, entra dentro de lo esperado, a parte de ser dos países con un nivel de población elevado, también tienen una gran reputación en cuanto a su actividad cibercriminal.
 
-Para acabar de hacernos una idea del flujo de ciberactividad que han generado los distintos honeypots, vamos a representar la información anterior en un mapa
+Para acabar de hacernos una idea del flujo de ciberactividad que han generado los distintos honeypots, vamos a representar la información anterior en un mapa:
 
 ```{r libraries, result='hide', echo= FALSE}
 library("ggmap")
@@ -298,11 +317,11 @@ mp
 ```
 
 
-#Segunda pregunta: Protocolos y puertos mas utilizados en los ataques
+#Segunda pregunta: Protocolos y puertos más utilizados en los ataques
 
-Un vez visto el volumen de ataques y el origen, vamos a análisis con mas detalle las caracteristicas del tráfico atacante. 
+Un vez visto el volumen de ataques y el origen, vamos a analizar con más detalle las características del tráfico atacante. 
 
-Primero, empezaremos analizando los protocolos de transporte más usados (TCP, UDP o ICMP) para los ataques a honeypots. A priori, antes de observar los resultados, esperamos que el protocolo mas utilizado sea TCP, ya que su uso es mucho mas extendido que el resto, aun así, en seguridad no se puede descuidar ninguna opción, la importancia de un puerto vulnerable UDP es la misma que TCP.
+Primero, empezaremos analizando los protocolos de transporte más usados (TCP, UDP o ICMP) para los ataques a honeypots. A priori, antes de observar los resultados, esperamos que el protocolo más utilizado sea TCP, ya que su uso es mucho más extendido que el resto, aun así, en seguridad no se puede descartar ninguna opción, la importancia de un puerto vulnerable UDP es la misma que en TCP.
 
 
 ```{r ptransporte, echo= TRUE}
@@ -320,7 +339,7 @@ protocol.graphic <- graphicCustomization(protocol.graphic)
 print(protocol.graphic)
 ```
 
-En la gráfica anterior se puede apreciar que el protocolo mas usado, con diferencia, es TCP, tal y como esperabamos. Para poder determinar con mayor precisión el porcentaje de uso de cada protocolo, una mejor manera de interpretar los resultados es a través de un gráfico circular.
+En el gráfico anterior se puede apreciar que el protocolo más usado, con diferencia, es TCP, tal y como esperábamos. Para poder determinar con mayor precisión el porcentaje de uso de cada protocolo, una mejor manera de interpretar los resultados es a través de un gráfico circular.
 
 ```{r quesito, echo= TRUE}
 #Another interesting and useful way of watching the previous graphic is through a pie chart
@@ -332,7 +351,7 @@ pie(protocol.aggregate$n,labels = lbls,col=rainbow(length(lbls)),
 ```
 
 
-La información del protocolo mas usado, aunque sea necesaria, entra dentro de lo esperado y por si sola no aporta muchos datos relevantes. Por ello, a continuación procederemos a analizar los puertos mas atacados tanto para TCP como UDP. Dado el alto volumen de puertos utilizados en los ataques, para no cometer el error de intentar procesar demasiada información, vamos a centrarnos en los 3 puertos mas usados.
+La información del protocolo más usado, aunque sea necesaria, entra dentro de lo esperado y por si sola no aporta muchos datos relevantes. Por ello, a continuación, procederemos a analizar los puertos más atacados tanto para TCP como UDP. Dado el alto volumen de puertos utilizados en los ataques, para no cometer el error de intentar procesar demasiada información, vamos a centrarnos en los 3 puertos más usados.
 
 ```{r top3_puertos, echo= TRUE}
 #group by protocol and perfomr a count to know how many times a protocl has been attacked
@@ -379,7 +398,7 @@ Es un protocolo para compartir ficheros en una red.
 Es un gestor de bases de datos relacionales. Al igual que MySQL, Oracle o PostgresSQL
 
 
-Como se puede apreciar, todos los puertos corresponen a servicios de Microsoft, todos ellos ampliamente conocidos, por lo que se deduce que los honeypots disponian de algun sistema operativo windows server. A la hora de investigar porque han sido estos los puertos mas atacados, llama la atención la facilidad para encontrar exploits para los servicios, con una simple búsqueda en google resulta sencillo encontrarlos, como por ejemplo, en el siguiente link se aprecian la cantidad de exploits existentes para Microsoft SQL Server,
+Como se puede apreciar, todos los puertos corresponden a servicios de Microsoft, todos ellos ampliamente conocidos, por lo que se deduce que los honeypots disponían de algún sistema operativo Windows Server. A la hora de investigar porque han sido estos los puertos más atacados, llama la atención la facilidad para encontrar exploits para los servicios, con una simple búsqueda en google resulta sencillo encontrarlos, como por ejemplo, en el siguiente link se aprecian la cantidad de exploits existentes para Microsoft SQL Server:
 
 https://www.cvedetails.com/vulnerability-list/vendor_id-26/product_id-251/Microsoft-Sql-Server.html
 
@@ -389,37 +408,35 @@ https://www.cvedetails.com/vulnerability-list/vendor_id-26/product_id-251/Micros
 
 - 53: Domain Name System (DNS)
 
-Este servicio no necesita presentación, DNS ofrece información sobre nombres e IPs de servidores. Hay numerosos ataques conocidos que tiene como objetivo este servicio, desde utilizarlo para realizar ataques de DDOS (si tiene el open resolver activado), DNS Spoofing, ataques de transferencia en zona, fuera bruta, etc.
+Este servicio no necesita presentación, DNS ofrece información sobre nombres e IPs de servidores. Hay numerosos ataques conocidos que tienen como objetivo este servicio, desde utilizarlo para realizar ataques de DDOS (si tiene el open resolver activado), DNS Spoofing, ataques de transferencia en zona, fuera bruta, etc.
 
 
 - 2193: drwcs -	Dr.Web Enterprise Management Service
 
-Doctor web es una empresa tecnologica de securidad que ofrece soluciones basada en anti-virus tanto para empresas como particulares. Después de visitar su págia, hemos encontrado que se focalizan especialmente en la protecció del mail.
+Doctor web es una empresa tecnológica de seguridad que ofrece soluciones basadas en antivirus tanto para empresas como para particulares. Después de visitar su página, hemos encontrado que se focalizan especialmente en la protección de correo electrónico.
 
 
 
-- 56338: Puertos dinamicos/privados
+- 56338: Puertos dinámicos/privados
 
-El puerto UDP 56338 es un puerto dinamico, quiere decir que no tiene asignado un servicio por defecto, por lo que en principio no se puede determiar el servicio atacado, al tratarse de un honeypot, quizas dejarón ese puerto abierto, para que fuera detectado mediante escaneo de puertos.
+El puerto UDP 56338 es un puerto dinámico, quiere decir que no tiene asignado un servicio por defecto, por lo que en principio no se puede determinar el servicio atacado, al tratarse de un honeypot, quizás dejaron ese puerto abierto, para que fuera detectado mediante escaneo de puertos.
 
-Aun así, se ha relaizado una breve investigación, y parece que ese puerto suele ser utilizado por Canon Color Network ScanGear V2.71, un driver para un scanner que permite a los ordenadores de una red usar Canon imageRUNNER ADVANCE, Color imageRUNNER, imagePRESS, imageRUNNER(equipped with a color scanner) or MF series digital copier as a network scanner. No se ha encontrado ningún exploit por internet para este servicio.
-
-
-
-De todos los puertos UDP vistos, el mas conocido (en seguridad) es con diferencia UDP, existen un amplio abanico de técnicas para poder recopilar información, e incluso, como se ha mencionado anteriormente, realizar ataques de denegación de servicio. Los otros dos servicios pertenecen a software instalado en el honeypot, al no formar parte de los servicios normalmente accesibles, suponemos que el alto volumen de tráfico es debido a que los distintos escaneos de puertos revelaron la existencia de los servicios, y los atacantes intentaron comporbar si eran vulnerables.
+Aun así, se ha realizado una breve investigación, y parece que ese puerto suele ser utilizado por Canon Color Network ScanGear V2.71, un driver para un scanner que permite a los ordenadores de una red usar Canon imageRUNNER ADVANCE, Color imageRUNNER, imagePRESS, imageRUNNER (equipped with a color scanner) or MF series digital copier as a network scanner. No se ha encontrado ningún exploit por internet para este servicio.
 
 
+De todos los puertos UDP vistos, el más conocido (en seguridad) es con diferencia UDP, existe un amplio abanico de técnicas para poder recopilar información, e incluso, como se ha mencionado anteriormente, realizar ataques de denegación de servicio. Los otros dos servicios pertenecen a software instalado en el honeypot, al no formar parte de los servicios normalmente accesibles, suponemos que el alto volumen de tráfico es debido a que los distintos escaneos de puertos revelaron la existencia de los servicios, y los atacantes intentaron comporbar si eran vulnerables.
 
-#Tercera pregunta: Existe relación entre el puerto atacado y la localización del honeypot?
+
+#Tercera pregunta: ¿Existe relación entre el puerto atacado y la localización del honeypot?
 
 
-Hasta ahora, en la primera pregunta (o analisis) hemos analizado el volumen de ataques y su procedencia, intentando determinar los paises mas activos así como los honeypots mas atacados. Hemos podido descubrir que Estados unidos forma parte de los paises mas atacados,como era de esperar, dada su relevancia mundial, del mismo modo que los paises asiaticos tienen una gran actividad en los honeypots, corroborando la fama que les precede en cuanto a ciberdelincuencia.
+Hasta ahora, en la primera pregunta (o análisis) hemos visto el volumen de ataques y su procedencia, intentando determinar los países más activos, así como los honeypots más atacados. Hemos podido descubrir que Estados Unidos de América forma parte de los países más atacados, como era de esperar, dada su relevancia mundial, del mismo modo que los países asiáticos que tienen una gran actividad en los honeypots, corroborando la fama que les precede en cuanto a ciberdelincuencia.
 
 En la segunda parte, nos hemos centrado en determinar cómo se han realizado los ataques. Hemos podido comprobar el uso extendido del protocolo TCP, sin olvidar tampoco los ataques al servidor de DNS, táctica muy popular en ciberseguridad.
 
-Por último, pretendemos relacionar, en cierto modo, la primera y segunda pregunta, combinando cada honeypot con sus puertos mas atacados e intentar determinar si existe algún tipo de relación. Los puertos atacados son el mismo para todos? Hay que tener en cuenta que alomejor el sistema operativo y servicios presentes en cada honeypot son distintos, ya que no disponemos de ese tipo de información. 
+Por último, pretendemos relacionar, en cierto modo, la primera y segunda pregunta, combinando cada honeypot con sus puertos más atacados e intentar determinar si existe algún tipo de relación. ¿Los puertos atacados son el mismo para todos? Hay que tener en cuenta que tal vez el sistema operativo y los servicios presentes en cada honeypot son distintos, ya que no disponemos de ese tipo de información. 
 
-Empecemos por el protocolo TCP.
+Empecemos por el protocolo TCP:
 
 
 ```{r tcp_puertos_honeypot, echo= TRUE}
@@ -455,3 +472,42 @@ host_tcp_port_gg <- graphicCustomization(host_tcp_port_gg, FALSE)
 print(host_tcp_port_gg)
 ```
 
+Podemos observar en los gráficos resultantes, que en general en todos los honeypots, el puerto 3389 correspondiente a RDP y que el puerto 1433 correspondiente a Microsoft-SQL-Server son los puertos TCP más atacados. Haciendo enfásis en los honeypots de Tokyo y de USA Este, podemos ver que destacan también los puertos 445 de Microsoft-DS y 80 de HTTP respectivamente, siendo los puertos más atacados ens estos 2 honeypots.
+
+Por otro lado, y siendo puertos mucho menos atacados que los anteriores, también aparecen puertos tan conocidos como el 22 (SSH), el 8080 (HTTP y puerto por defecto de Apache Tomcat) y 3306 correspondiente a MySQL.
+
+Al realizar el análisis de estos gráficos, podemos concluir que hay un patrón que se repite en casi todos los honeypots mostrados, ya que los puertos 3389 y 1433 suelen ser los más atacados en todos, aunque hay algunas excepciones.
+
+Ahora seguimos con el mismo estudio, pero haciendo un enfoque sobre el protocolo UDP:
+
+```{r udp_puertos_honeypot, echo= TRUE}
+#Subset that correlates the host with the TCP protocol and the ports used
+host_udp <- subset(host_protocol_dataframe, proto == "UDP")
+
+#group by protocol and perfomr a count to know how many times a protocl has been attacked
+host_udp.aggregate <- host_udp %>% group_by(host) %>% count(dpt, sort = T)
+
+# As there are a lot of ports used, the graphic can't be correctly seen, so, as we did in the second question,
+# we are going just to compare the three 5 most used ports
+host_udp.aggregate <- host_udp.aggregate %>% top_n(5, n)
+
+# 'coerce' the destionation port 'dpt' columns to print it easier in the graphic
+host_udp.aggregate$dpt <- as.character(host_udp.aggregate$dpt)
+
+# set up a ggplot instance, pretty color for each host
+host_udp_port_gg <- ggplot(host_udp.aggregate, aes(x = dpt, y = n, fill = host))
+# add in a simple bar plot
+host_udp_port_gg <- host_udp_port_gg + geom_bar(stat = "identity", width = 0.5)
+# create individual plots for each host with free scales
+host_udp_port_gg <- host_udp_port_gg + facet_wrap(~host, scales = "free")
+# simple theme, with no legend
+host_udp_port_gg <- host_udp_port_gg + theme(legend.position = "none")
+host_udp_port_gg <- graphicCustomization(host_udp_port_gg, FALSE)
+print(host_udp_port_gg)
+```
+
+Analizando los gráficos de los puertos UDP, podemos observar que no se repiten los mismos resultados que en TCP, es decir, que los ataques no se producen en mayor medida en algunos puertos en todos lo honeypots, en este caso están mucho más repartidos entre los diferentes puertos.
+
+Podemos observar, que prácticamente, en cada honeypot destaca un puerto más atacado diferente al resto, y que no destaca por la repetición de dichos puertos, pero si que hay ataques sobre diferentes puertos que aunque no sean los más atacados, se repiten en la mayoría de los honeypots como bien pueden ser el puerto 53 correspondiente a DNS, el 19 correspondiente a Chargen (generador de carácteres), el puerto 5060 correspondiente a SIP (VoIP) o el puerto 1434 correspondiente a Microsoft-SQL-Monitor.
+
+Al ver el resultado en los gráficos UDP, podemos concluir que no hay un patrón común para los ataques, ya que cada honeypot tiene un puerto más atacado que otro y no son los mismos en cada uno, por lo tanto, hay un amplio abanico de ataques y sin práctimente patrones de repetición en los puertos más atacados, a diferencia de TCP (si que se repiten algunos, como hemos comentado anteriormente, pero da la casualidad que no son los más atacados).
