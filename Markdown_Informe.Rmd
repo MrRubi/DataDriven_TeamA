@@ -9,7 +9,7 @@ date: "14 de diciembre de 2017"
 
 #Análisis de la actividad de distintos honeypots
 
-EQUIPO A. Práctica del módulo Data Driven Security, Máster en Gestión de Ciberseguridad (Cybersecurity Management) edición 2017-2018. Universidad Politécnica de Cataluña - Facultad de Informática de Barcelona.
+EQUIPO A. Práctica del módulo Data Driven Security, Máster en Gestión de Ciberseguridad (Cybersecurity Management) edición 2017-2018. Universidad Politécnica de Cataluña - Facultad de Informática de Barcelona. 
 
 Para esta práctica hemos obtenido datos del tráfico de 9 Honeypots del 2013, distribuidos globalmente, entre Marzo y Septiembre. Entre los datos facilitados, encontramos información como el timestamp, el host "atacado", el origen del ataque (tanto localidad como la dirección IPv4), etc.
 
@@ -45,7 +45,7 @@ Aquí podrás encontrar el GitHub personal de cada integrante del Equipo A:
 
 En el caso de Marc, agregamos la Cuenta 2 al repositorio compartido del Equipo A pero se le subían los commits y quedaba registrado desde la Cuenta 1, por eso hemos puesto las dos.
 
-##Carga de los datos y filtrado de informacion
+##Carga de los datos y filtrado de información
 
 En esta primera parte pretendemos cargar el CSV, analizar los datos, limpiar, y quedarnos con un dataframe con el que poder trabajar y resolver nuestras cuestiones.
 
@@ -89,7 +89,7 @@ names(Complete_Dataset)
 
 - **host:** Identificador del honeypot atacado
 
-- **src:** Segun la fuente de los datos, representa la direccion IP origen, aunque desconocemos el formato utilizado
+- **src:** Según la fuente de los datos, representa la dirección IP origen, aunque desconocemos el formato utilizado
 
 - **proto:** Protocolo de transporte usado (TCP,UDP,ICMP)
 
