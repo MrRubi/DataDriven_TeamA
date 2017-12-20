@@ -89,7 +89,7 @@ names(Complete_Dataset)
 
 - **host:** Identificador del honeypot atacado
 
-- **src:** Segun la fuente de los datos, representa la direccion ip origen, aunque desconocemos el formato utilizado
+- **src:** Segun la fuente de los datos, representa la direccion IP origen, aunque desconocemos el formato utilizado
 
 - **proto:** Protocolo de transporte usado (TCP,UDP,ICMP)
 
@@ -107,9 +107,9 @@ names(Complete_Dataset)
 
 - **locale:** Población desde la que se realiza el ataque
 
-- **localeabbr:** Abreviacion de la poblacion desde la que se realiza el ataque
+- **localeabbr:** Abreviación de la población desde la que se realiza el ataque
 
-- **postalcode:** Codigo postal de la localidad desde donde se realiza el ataque
+- **postalcode:** Código postal de la localidad desde donde se realiza el ataque
 
 - **latitude:** Coordenada latitud del origen del ataque
 
