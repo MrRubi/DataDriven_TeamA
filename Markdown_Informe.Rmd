@@ -7,7 +7,7 @@ output:
 date: "14 de diciembre de 2017"
 ---
 
-#Analysis of Honeypots activity
+#Analisis de la actividad de distintos honeypots
 
 EQUIPO A. Práctica módulo Data Driven Security, máster en cybersecurity management edición 2017-2018. UPC SCHOOL
 
@@ -200,7 +200,7 @@ DataSet_filtered <- DataSet_filtered[-which(DataSet_filtered$country == ""), ]
 
 Llegados a este punto, en el dataframe *DataSet_filtered* disponemos de toda la información necesaria y filtrada para poder empezar a responder a nuestras preguntas.
 
-#Honeypot mas atacado
+#Primera pregunta: Honeypot mas atacado
 
 El dataset encontrado dispone de datos sobre 9 honeypots distintos.
 
@@ -297,6 +297,9 @@ mp <- mp+ geom_point(aes(x=longitud, y=latitud) ,color=rgb(1,0.65,0,0.2), size=0
 mp
 ```
 
+
+#Segunda pregunta: Protocolos y puertos mas utilizados en los ataques
+
 Un vez visto el volumen de ataques y el origen, vamos a análisis con mas detalle las caracteristicas del tráfico atacante. 
 
 Primero, empezaremos analizando los protocolos de transporte más usados (TCP, UDP o ICMP) para los ataques a honeypots. A priori, antes de observar los resultados, esperamos que el protocolo mas utilizado sea TCP, ya que su uso es mucho mas extendido que el resto, aun así, en seguridad no se puede descuidar ninguna opción, la importancia de un puerto vulnerable UDP es la misma que TCP.
@@ -360,13 +363,25 @@ Para TCP, los puertos más atacados son, en orden ascendente, 3389, 445 y 1433. 
 
 **TCP**
 
+
 - 3389: Microsoft Terminal Server (RDP) officially registered as Windows Based Terminal (WBT)
-- 445: Microsoft-DS SMB file sharing
+
+Servicio de escritorio remoto (Remote Desktop Protocol).
+
+
+- 445:  Microsoft-DS SMB file sharing
+
+Es un protocolo para compartir ficheros en una red. 
+
+
 - 1433: Microsoft SQL Server database management system (MSSQL) server
 
+Es un gestor de bases de datos relacionales. Al igual que MySQL, Oracle o PostgresSQL
 
 
-ANALIZAR PUERTOS (EXISTEN EXPLOITS? SON PUERTOS MUY ATACADOS POR DEFECTO?) COMO HE HECHO EN UDP...
+Como se puede apreciar, todos los puertos corresponen a servicios de Microsoft, todos ellos ampliamente conocidos, por lo que se deduce que los honeypots disponian de algun sistema operativo windows server. A la hora de investigar porque han sido estos los puertos mas atacados, llama la atención la facilidad para encontrar exploits para los servicios, con una simple búsqueda en google resulta sencillo encontrarlos, como por ejemplo, en el siguiente link se aprecian la cantidad de exploits existentes para Microsoft SQL Server,
+
+https://www.cvedetails.com/vulnerability-list/vendor_id-26/product_id-251/Microsoft-Sql-Server.html
 
 
 
@@ -390,7 +405,53 @@ El puerto UDP 56338 es un puerto dinamico, quiere decir que no tiene asignado un
 Aun así, se ha relaizado una breve investigación, y parece que ese puerto suele ser utilizado por Canon Color Network ScanGear V2.71, un driver para un scanner que permite a los ordenadores de una red usar Canon imageRUNNER ADVANCE, Color imageRUNNER, imagePRESS, imageRUNNER(equipped with a color scanner) or MF series digital copier as a network scanner. No se ha encontrado ningún exploit por internet para este servicio.
 
 
-RESUMEN:
 
-De todos los puertos UDP vistos, el mas conocido (en seguridad) es con diferencia UDP, existen un amplio abanico de técnicas para poder recopilar información, e incluso, como se ha mencionado anteriormente, realizar ataques de denegación de servicio. Los otros dos servicios pertenecen a software instalado en el honeypot, al no formar parte de los servicios normalmente accesibles, suponemos que el alto volumen de tráfico es debido a que los distintos escaneos de puertos revelaron la existencia de los servicios, e intentaron atacarlos.
+De todos los puertos UDP vistos, el mas conocido (en seguridad) es con diferencia UDP, existen un amplio abanico de técnicas para poder recopilar información, e incluso, como se ha mencionado anteriormente, realizar ataques de denegación de servicio. Los otros dos servicios pertenecen a software instalado en el honeypot, al no formar parte de los servicios normalmente accesibles, suponemos que el alto volumen de tráfico es debido a que los distintos escaneos de puertos revelaron la existencia de los servicios, y los atacantes intentaron comporbar si eran vulnerables.
+
+
+
+#Tercera pregunta: Existe relación entre el puerto atacado y la localización del honeypot?
+
+
+Hasta ahora, en la primera pregunta (o analisis) hemos analizado el volumen de ataques y su procedencia, intentando determinar los paises mas activos así como los honeypots mas atacados. Hemos podido descubrir que Estados unidos forma parte de los paises mas atacados,como era de esperar, dada su relevancia mundial, del mismo modo que los paises asiaticos tienen una gran actividad en los honeypots, corroborando la fama que les precede en cuanto a ciberdelincuencia.
+
+En la segunda parte, nos hemos centrado en determinar cómo se han realizado los ataques. Hemos podido comprobar el uso extendido del protocolo TCP, sin olvidar tampoco los ataques al servidor de DNS, táctica muy popular en ciberseguridad.
+
+Por último, pretendemos relacionar, en cierto modo, la primera y segunda pregunta, combinando cada honeypot con sus puertos mas atacados e intentar determinar si existe algún tipo de relación. Los puertos atacados son el mismo para todos? Hay que tener en cuenta que alomejor el sistema operativo y servicios presentes en cada honeypot son distintos, ya que no disponemos de ese tipo de información. 
+
+Empecemos por el protocolo TCP.
+
+
+```{r tcp_puertos_honeypot, echo= TRUE}
+#load needed libraries
+library(ggplot2)
+library(dplyr)
+
+#filter host, protocol ('proto') and destination port ('dpt') columns 
+host_protocol_dataframe <- DataSet_filtered[c("host", "proto", "dpt")]
+
+#Subset that correlates the host with the TCP protocol and the ports used
+host_tcp <- subset(host_protocol_dataframe, proto == "TCP")
+
+#group by protocol and perfomr a count to know how many times a protocl has been attacked
+host_tcp_port.aggregate <- host_tcp %>% group_by(host) %>% count(dpt, sort = T)
+
+# As there are a lot of ports used, the graphic can't be correctly seen, so, as we did in the second question,
+# we are going just to compare the three 5 most used ports
+host_tcp_port.aggregate <- host_tcp_port.aggregate %>% top_n(5, n)
+
+# 'coerce' the destionation port 'dpt' columns to print it easier in the graphic
+host_tcp_port.aggregate$dpt <- as.character(host_tcp_port.aggregate$dpt)
+
+# set up a ggplot instance, pretty color for each host
+host_tcp_port_gg <- ggplot(host_tcp_port.aggregate, aes(x = dpt, y = n, fill = host))
+# add in a simple bar plot
+host_tcp_port_gg <- host_tcp_port_gg + geom_bar(stat = "identity", width = 0.5)
+# create individual plots for each host with free scales
+host_tcp_port_gg <- host_tcp_port_gg + facet_wrap(~host, scales = "free")
+# simple theme, with no legend
+host_tcp_port_gg <- host_tcp_port_gg + theme(legend.position = "none")
+host_tcp_port_gg <- graphicCustomization(host_tcp_port_gg, FALSE)
+print(host_tcp_port_gg)
+```
 
