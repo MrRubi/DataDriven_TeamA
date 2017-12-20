@@ -9,7 +9,7 @@ date: "14 de diciembre de 2017"
 
 #Análisis de la actividad de distintos honeypots
 
-EQUIPO A. Práctica del módulo Data Driven Security, Máster en Gestión de Ciberseguridad (Cybersecurity Management) edición 2017-2018. Universidad Politécnica de Cataluña - Facultad de Informática de Barcelona. 
+[EQUIPO A][1]. Práctica del módulo Data Driven Security, Máster en Gestión de Ciberseguridad (Cybersecurity Management) edición 2017-2018. Universidad Politécnica de Cataluña - Facultad de Informática de Barcelona. 
 
 Para esta práctica hemos obtenido datos del tráfico de 9 Honeypots del 2013, distribuidos globalmente, entre Marzo y Septiembre. Entre los datos facilitados, encontramos información como el timestamp, el host "atacado", el origen del ataque (tanto localidad como la dirección IPv4), etc.
 
@@ -19,24 +19,14 @@ Las preguntas que nos hemos planteado son las siguientes:
 2. ¿Cuáles son los protocolos y puertos más usados?
 3. ¿Existe alguna relación entre la geolocalización del honeypot y el puerto atacado?
 
-Integrantes del Equipo A:
+Integrantes del [Equipo A][1]:
   
-- Ángel Rubiño Fernández [Mr. T]
-- Álex Gonzalo Rodríguez [Hannibal]
-- José Raúl Jiménez Lama [Fénix]
-- Marc Pallejà Mairena [Murdok]
-
-Aquí podrás encontrar el [GitHub][1] del Equipo A 
+- [Ángel Rubiño Fernández - Mr. T][2]
+- [Álex Gonzalo Rodríguez - Hannibal][3]
+- [José Raúl Jiménez Lama - Fénix][4]
+- Marc Pallejà Mairena - Murdok [Cuenta 1][5] [Cuenta 2][6]
 
 [1]: https://github.com/MrRubi/DataDriven_TeamA 
-
-Aquí podrás encontrar el GitHub personal de cada integrante del Equipo A: 
-- [Ángel Rubiño Fernández - Mr. T][2] 
-- [Álex Gonzalo Rodríguez - Hannibal][3] 
-- [José Raúl Jiménez Lama - Fénix][4] 
-- [Marc Pallejà Mairena - Murdok (Cuenta 1)][5] 
-- [Marc Pallejà Mairena - Murdok (Cuenta 2)][6]
-
 [2]: https://github.com/MrRubi
 [3]: https://github.com/alexgonzalo 
 [4]: https://github.com/jrjlama 
