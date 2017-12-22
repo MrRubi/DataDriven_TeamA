@@ -64,8 +64,8 @@ knitr::opts_knit$set(root.dir = "./laboratory")
 ```{r download_and_load_packages}
 requiredPackages <- c("ggplot2", "ggmap", "XML", "dplyr", "knitr", "rmarkdown")
 if (length(setdiff(requiredPackages, rownames(installed.packages()))) > 0) {
-  deltaPackages <- setdiff(requiredPackages, rownames(installed.packages()))
-  install.packages(deltaPackages, repos = "http://cran.us.r-project.org")
+ deltaPackages <- setdiff(requiredPackages, rownames(installed.packages()))
+ install.packages(deltaPackages, repos = "http://cran.us.r-project.org")
 }
 
 suppressMessages(library("ggplot2"))
@@ -274,7 +274,7 @@ mostAttackedHostsByCountry <- DataSet_filtered %>% group_by(host, country) %>% s
 dodge <- position_dodge(width = 0.9)
 attacksLocation.graphic <- ggplot(mostAttackedHostsByCountry, aes(x = host, y = attacks, fill = country)) 
 attacksLocation.graphic <- attacksLocation.graphic + geom_bar(stat = "identity", position = position_dodge())
-attacksLocation.graphic <- attacksLocation.graphic + labs(y = "Ataques", x = "Honeypots", title = "Top 3 de paises atacantes por cada honeypot")
+attacksLocation.graphic <- attacksLocation.graphic + labs(y = "Ataques", x = "Honeypots", title = "Top 3 de países atacantes por cada honeypot")
 
 bDelete_x_AxisNames = FALSE
 attacksLocation.graphic <- graphicCustomization(attacksLocation.graphic, FALSE)
@@ -337,7 +337,7 @@ protocol.aggregate <- protocolAndPortDataSet %>% count(proto, sort = T)
 #print graphic to see the results
 protocol.graphic <- ggplot(protocol.aggregate, aes(x = proto, y = n, fill = proto))
 protocol.graphic <- protocol.graphic + geom_bar(stat = "identity", width = 0.5)
-protocol.graphic <- protocol.graphic + labs(y = "Veces utilizado", x = "Protocolo", title = "Protocolo de trasnporte mas usado")
+protocol.graphic <- protocol.graphic + labs(y = "Veces utilizado", x = "Protocolo", title = "Protocolos de transporte más usados")
 protocol.graphic <- graphicCustomization(protocol.graphic)
 print(protocol.graphic)
 ```
@@ -350,7 +350,7 @@ pct <- round(protocol.aggregate$n/sum(protocol.aggregate$n)*100)
 lbls <- paste(protocol.aggregate$proto, pct) # add percents to labels
 lbls <- paste(lbls,"%",sep="") # ad % to labels 
 pie(protocol.aggregate$n,labels = lbls,col=rainbow(length(lbls)),
-    main="Grafica circular representando el uso de protocols de comunicación") 
+    main="Gráfico circular representando el uso de protocolos de transporte") 
 ```
 
 
@@ -373,7 +373,7 @@ port.aggregate$dpt <- as.character(port.aggregate$dpt)
 dodge <- position_dodge(width = 0.9)
 portByProtocol.graphic <- ggplot(port.aggregate, aes(x = dpt, y = n, fill = proto))
 portByProtocol.graphic <- portByProtocol.graphic + geom_bar(stat = "identity", width = 0.5)
-portByProtocol.graphic <- portByProtocol.graphic + labs(y = "Veces usado", x = "Puertos", title = "Top 3 de puertos mas atacados por protocolo")
+portByProtocol.graphic <- portByProtocol.graphic + labs(y = "Veces usado", x = "Puertos", title = "Top 3 de puertos más atacados por protocolo")
 portByProtocol.graphic <- graphicCustomization(portByProtocol.graphic, FALSE)
 print(portByProtocol.graphic)
 
@@ -468,7 +468,7 @@ host_tcp_port_gg <- host_tcp_port_gg + geom_bar(stat = "identity", width = 0.5)
 host_tcp_port_gg <- host_tcp_port_gg + facet_wrap(~host, scales = "free")
 # simple theme, with no legend
 host_tcp_port_gg <- host_tcp_port_gg + theme(legend.position = "none")
-host_tcp_port_gg <- host_tcp_port_gg + labs(y = "Veces usado", x = "Puertos", title = "Puertos mas usados en TCP por honeypot")
+host_tcp_port_gg <- host_tcp_port_gg + labs(y = "Veces usado", x = "Puertos", title = "Puertos más usados en TCP por honeypot")
 host_tcp_port_gg <- graphicCustomization(host_tcp_port_gg, FALSE)
 print(host_tcp_port_gg)
 ```
@@ -505,7 +505,7 @@ host_udp_port_gg <- host_udp_port_gg + geom_bar(stat = "identity", width = 0.5)
 host_udp_port_gg <- host_udp_port_gg + facet_wrap(~host, scales = "free")
 # simple theme, with no legend
 host_udp_port_gg <- host_udp_port_gg + theme(legend.position = "none")
-host_udp_port_gg <- host_udp_port_gg  + labs(y = "Veces usado", x = "Puertos", title = "Puertos mas usados en UDP por honeypot")
+host_udp_port_gg <- host_udp_port_gg  + labs(y = "Veces usado", x = "Puertos", title = "Puertos más usados en UDP por honeypot")
 host_udp_port_gg <- graphicCustomization(host_udp_port_gg, FALSE)
 print(host_udp_port_gg)
 ```
@@ -516,7 +516,7 @@ Prácticamente, en cada honeypot el puerto más atacado es diferente al resto, a
 
 Intentando establecer una relación entre estos últimos servicios, resulta relativamente sencillo encontrar exploits para ellos, el caso de DNS ya lo hemos comentado anteriormente, para Chargen, hemos podido observar que existe un exploit mediante el cual se pueden realizar ataques de denegación de servicio, y, por último, para Microsoft-SQL-Monitor relizando una breve búsqueda en Google se encuentran con facilidad distintos exploits.
 
-Al ver el resultado en los gráficos UDP, podemos concluir que no hay un patrón común tan marcado para los ataques como en TCP, ya que para cada honeypot el puerto más atacado es distinto que el resto, por lo tanto, hay un amplio abanico de ataques y sin práctimente patrones de repetición en los puertos más atacados, a diferencia de TCP. No podemos descartar que esto sea debido a que los servicios disponibles en cada honeypot son distintos entre si. 
+Al ver el resultado en los gráficos UDP, podemos concluir que no hay un patrón común tan marcado para los ataques como en TCP, ya que para cada honeypot el puerto más atacado es distinto que el resto, por lo tanto, hay un amplio abanico de ataques y sin práctimente patrones de repetición en los puertos más atacados, a diferencia de TCP. No podemos descartar que esto sea debido a que los servicios disponibles en cada honeypot son distintos entre sí. 
 
 #Conclusiones
 
