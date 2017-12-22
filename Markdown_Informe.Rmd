@@ -33,7 +33,7 @@ Integrantes del [Equipo A][1]:
 [5]: https://github.com/marcpalleja
 [6]: https://github.com/marcpallejamairena 
 
-En el caso de Marc, agregamos la Cuenta 2 al repositorio compartido del Equipo A pero se le subían los commits y quedaba registrado desde la Cuenta 1, por eso hemos puesto las dos.
+En el caso de Marc, agregamos la [Cuenta 2][6] al repositorio compartido del [Equipo A][1] pero se le subían los commits y quedaba registrado desde la [Cuenta 1][5], por eso hemos puesto las dos.
 
 ##Carga de los datos y filtrado de información
 
@@ -513,10 +513,10 @@ Al ver el resultado en los gráficos UDP, podemos concluir que no hay un patrón
 
 A modo de conclusiones respecto a la información extraída y analizada del estudio tenemos una serie de puntos relevantes a mencionar:
 
-- El origen de los ataques procede de los gigantes como China y Estados unidos copando la mayoria de ellos.
+- El origen de los ataques procede de los gigantes como China y Estados Unidos copando la mayoría de ellos.
 
-- El foco de ataque de estos, aunque también del resto del mundo ha sido principalmente Singapur, Oregon y Tpkyo, casualmente en el mismo continente que China.
+- El foco de ataque de estos, aunque también del resto del mundo ha sido principalmente Singapur, Oregon y Tokyo, casualmente en el mismo continente que China.
 
 - El protocolo de transporte sobre el que trabajan los servicios más atacados ha sido TCP, seguido de UDP en segundo lugar e ICMP en tercero.
 
-- Los protocolos más atacados en la mayoria de los casos, aunque más en el caso de TCP, son puertos conocidos y utilizados en el mundo de la ciberseguridad.
+- Los protocolos más atacados en la mayoría de los casos, aunque más en el caso de TCP, son puertos conocidos y utilizados en el mundo de la ciberseguridad.
